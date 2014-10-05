@@ -79,7 +79,4 @@ public class Utileria {
         return ois.readObject();
     }
     
-    public void metodopurebanuevoRepo(){
-        
-    }
 }
