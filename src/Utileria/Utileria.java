@@ -36,6 +36,8 @@ public class Utileria {
             return "Mensaje privado";
         if(id == 4)
             return "Mensaje de logout";
+        if(id == 5)
+            return "Mensaje de error al leer un mensaje";
         
         return "Error: Mensaje no reconocido";
     }

@@ -40,6 +40,21 @@ public class Mensaje implements Serializable {
         this.destinatario = destinatario;
         
     }
+    
+    /**
+     *Constructor de la clase mensaje que inicializa todas las variables de la clase
+     * @param tipo tipo describe el modo en que se tratara al mensaje
+     * @param datos datos describe el cuerpo del mensaje
+     */
+    public Mensaje(int tipo, 
+            String datos){
+        
+        this.tipoMensaje = tipo;
+        this.datos = datos;
+        this.remitente = null;
+        this.destinatario = null;
+        
+    }
 
     //<editor-fold desc="Geters y Seters de la clase">
     public int getTipoMensaje() {
