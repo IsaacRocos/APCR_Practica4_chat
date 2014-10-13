@@ -13,6 +13,6 @@ import DTO.Mensaje;
  */
 public interface Chat {
     
-    public void procesarMesnaje(Mensaje mensaje);
+    public void procesarMensaje(Mensaje mensaje);
     
 }

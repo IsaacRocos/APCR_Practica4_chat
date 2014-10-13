@@ -1,26 +1,41 @@
 package Interfaz;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLEditorKit;
+
 
 /**
  *
  * @author Isaac
  */
 public class VentanaChat extends javax.swing.JFrame {
-
+    HTMLEditorKit kit;
+    HTMLDocument doc;
+    
     
     public VentanaChat() {
         initComponents();
+        
         pruebaLista();
+        //pruebaAreaMensajes();
         
     }
     
     public void pruebaLista(){
         String[] usuarios = {"Todos","Erick","Ivan","Ferch","Isaac"};
         this.listaDeUsuarios.setListData(usuarios);
-        
+    }
+    
+    public void pruebaAreaMensajes(){
+        textPaneMensajes.setText("<html><strong>¡Wasap!</strong></html>");
     }
    
+    // initComponents()
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -36,12 +51,23 @@ public class VentanaChat extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         textAreaMensaje = new javax.swing.JTextArea();
-
+		kit = new HTMLEditorKit();
+        doc = new HTMLDocument();
+		
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
         botonEnviarMensaje.setText("Enviar");
+        botonEnviarMensaje.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonEnviarMensajeActionPerformed(evt);
+            }
+        });
 
+        textPaneMensajes.setEditable(false);
+        textPaneMensajes.setContentType("text/html"); // NOI18N
+		textPaneMensajes.setEditorKit(kit);
+        textPaneMensajes.setDocument(doc);
         jScrollPane1.setViewportView(textPaneMensajes);
 
         listaDeUsuarios.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
@@ -63,6 +89,11 @@ public class VentanaChat extends javax.swing.JFrame {
 
         textAreaMensaje.setColumns(20);
         textAreaMensaje.setRows(5);
+        textAreaMensaje.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                textAreaMensajeKeyPressed(evt);
+            }
+        });
         jScrollPane3.setViewportView(textAreaMensaje);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -123,6 +154,23 @@ public class VentanaChat extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    
+    
+    private void botonEnviarMensajeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEnviarMensajeActionPerformed
+        try {
+            kit.insertHTML(doc, doc.getLength(), "<font color='red'><u>"+textAreaMensaje.getText()+"</u></font>", 0, 0, null);
+        } catch (BadLocationException ex) {
+            System.out.println("Error: Referencia a una localizacion no existente");
+        } catch (IOException ex) {
+            System.out.println("Error IO");
+        }
+        textAreaMensaje.setText("");
+    }//GEN-LAST:event_botonEnviarMensajeActionPerformed
+
+       //Al presionar Enter
+    private void textAreaMensajeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textAreaMensajeKeyPressed
+        
+    }//GEN-LAST:event_textAreaMensajeKeyPressed
 
   
     public static void main(String args[]) {

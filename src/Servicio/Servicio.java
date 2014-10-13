@@ -166,7 +166,7 @@ public class Servicio extends Thread {
                 err = "Error al recibir un mensaje, El objeto recibido no es de tipo Mensaje:\n"+cnfe.getMessage();
                 mnsRecibido = new Mensaje(5,err);
             }
-            this.getChat().procesarMesnaje(mnsRecibido);
+            this.getChat().procesarMensaje(mnsRecibido);
         }
     }
 
