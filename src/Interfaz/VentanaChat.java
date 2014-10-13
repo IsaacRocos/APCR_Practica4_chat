@@ -157,6 +157,7 @@ public class VentanaChat extends javax.swing.JFrame {
     
     
     private void botonEnviarMensajeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEnviarMensajeActionPerformed
+        //Probando mensajes con formato en JTextPane
         try {
             kit.insertHTML(doc, doc.getLength(), "<font color='red'><u>"+textAreaMensaje.getText()+"</u></font>", 0, 0, null);
         } catch (BadLocationException ex) {
