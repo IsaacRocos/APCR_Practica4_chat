@@ -1,41 +1,160 @@
 package Interfaz;
 
+import DTO.Mensaje;
+import Servicio.Servicio;
+import Servicio.ServicioUsuario;
+import Utileria.Chat;
+import java.awt.Color;
+import javax.swing.JFrame;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
-
 
 /**
  *
  * @author Isaac
  */
-public class VentanaChat extends javax.swing.JFrame {
+public class VentanaChat extends JFrame implements Runnable, Chat {
+
+    Servicio servicio;
     HTMLEditorKit kit;
     HTMLDocument doc;
-    
-    
+    ServicioUsuario servicioUsuario;
+    String nombreUsuario;
+    String grupo;
+    int puertoEnvio;
+    int puertoEscucha;
+
     public VentanaChat() {
+        System.out.println("InitCoponents...");
         initComponents();
-        
-        pruebaLista();
-        //pruebaAreaMensajes();
+        pruebaLista(); // prueba el despliegue de nombres de usuarios conectados.
+        // En este caso, se debería hacer la llamada a el método 
+        // que seencarga de verificar qué usuarios están conectados.
+    }
+
+    private VentanaChat(Inicio ventanaInicio) {
+        this();
+        nombreUsuario = ventanaInicio.getNombreUsuario();
+        grupo = ventanaInicio.getGrupo();
+        puertoEnvio = ventanaInicio.getPuertoEnvio();
+        puertoEscucha = ventanaInicio.getPuertoEscucha();
+
+        labelNombreDeUsuario.setText(nombreUsuario);
         
     }
-    
-    public void pruebaLista(){
-        String[] usuarios = {"Todos","Erick","Ivan","Ferch","Isaac"};
+
+    private void pruebaLista() {
+        String[] usuarios = {"Todos", "Erick", "Ivan", "Ferch", "Isaac"};
         this.listaDeUsuarios.setListData(usuarios);
     }
-    
-    public void pruebaAreaMensajes(){
-        textPaneMensajes.setText("<html><strong>¡Wasap!</strong></html>");
+
+    /**
+     * Muestra en la ventana de chat, los mensajes ya formateados de los
+     * usuarios.
+     *
+     * @param mensaje
+     */
+    private void mostrarMensajeVentana(String mensaje) {
+        //Probando mensajes con formato en JTextPane
+        try {
+            //kit.insertHTML(doc, doc.getLength(), "<font color='red'><u>" + textAreaMensaje.getText() + "</u></font>", 0, 0, null);
+            kit.insertHTML(doc, doc.getLength(), mensaje, 0, 0, null);
+        } catch (BadLocationException ex) {
+            System.out.println("Error: Referencia a una localizacion no existente");
+        } catch (IOException ex) {
+            System.out.println("Error IO");
+        }
+        textAreaMensaje.setText("");
     }
-   
-    // initComponents()
+
+    /**
+     * Verifica si se presina el boton "botonEnviar".En caso de que así sea,
+     * llama a los métodos mostrarMensajeVentana() y ...
+     *
+     * @param evt Contiene la información del evento ocurrido en el botón
+     * "botonEnviar".
+     */
+    private void botonEnviarMensajeActionPerformed(java.awt.event.ActionEvent evt) {
+        String mensaje = textAreaMensaje.getText();
+        // mensaje = metodo formato mensaje
+        mostrarMensajeVentana(mensaje);
+    }
+
+    /**
+     * Verifica si se presina la tecla [Enter]. En caso de que así sea, llama a
+     * los métodos mostrarMensajeVentana() y ...
+     *
+     * @param evt Es el evento que tiene la información de la tecla que presiona
+     * el usuario en textAreaMensaje.
+     */
+    private void textAreaMensajeKeyPressed(java.awt.event.KeyEvent evt) {
+        int codigoTecla = evt.getKeyCode();
+        if (codigoTecla == 10) {
+            String mensaje = textAreaMensaje.getText();
+            // mensaje = metodo formato mensaje
+            mostrarMensajeVentana(mensaje);
+
+        }
+    }
+
+    private boolean conectaServicio() {
+        boolean estadoConexion = false;
+        System.out.println("Intentando conectar al grupo:" + grupo);
+        servicio = new Servicio(grupo, puertoEnvio, puertoEscucha, servicioUsuario);
+        try {
+            servicio.unirAlGrupo();
+            estadoConexion = true;
+            labelEstadoConexion.setForeground(Color.GREEN);
+            labelEstadoConexion.setText("Conectado a: " + grupo);
+        } catch (IOException e) {
+            estadoConexion = false;
+            System.err.println("Ocurri\u00f3 un error al intencat conectar al servidor");
+            JOptionPane.showMessageDialog(null, "Ocurri\u00f3 un error al unirse al grupo.\nPor favor, intentelo de nuevo.", "Error", ERROR);
+        }
+        return estadoConexion;
+    }
+
+    @Override
+    public void procesarMensaje(Mensaje mensaje) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Mostrando ventana de Chat...");
+        this.setVisible(true);
+    }
+
+    /**
+     * Método main
+     */
+    public static void main(String args[]) {
+        VentanaChat ventanaChat;
+        Inicio ventanaInicio = new Inicio();
+        ventanaInicio.mostrarVentana(ventanaInicio);
+        synchronized (ventanaInicio) {
+            try {
+                ventanaInicio.wait();
+            } catch (InterruptedException ex) {
+                System.out.println("InterrumptedException");
+            }
+        }
+        
+        ventanaChat = new VentanaChat(ventanaInicio);
+
+        if (ventanaChat.conectaServicio()) {
+            java.awt.EventQueue.invokeLater(ventanaChat);
+        }
+    }
+
+    /**
+     * initComponents Inicializa todos los componentes de la ventana de chat.
+     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -51,9 +170,7 @@ public class VentanaChat extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         textAreaMensaje = new javax.swing.JTextArea();
-		kit = new HTMLEditorKit();
-        doc = new HTMLDocument();
-		
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
@@ -66,8 +183,6 @@ public class VentanaChat extends javax.swing.JFrame {
 
         textPaneMensajes.setEditable(false);
         textPaneMensajes.setContentType("text/html"); // NOI18N
-		textPaneMensajes.setEditorKit(kit);
-        textPaneMensajes.setDocument(doc);
         jScrollPane1.setViewportView(textPaneMensajes);
 
         listaDeUsuarios.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
@@ -100,52 +215,45 @@ public class VentanaChat extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jScrollPane3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(botonEnviarMensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(14, 14, 14))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane3)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(labelEstadoConexion, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(labelNombreDeUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
+                            .addComponent(botonEnviarMensaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(14, 14, 14))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelNombreDeUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(labelEstadoConexion, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(213, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(labelNombreDeUsuario)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 504, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(botonEnviarMensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(27, 27, 27)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(botonEnviarMensaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(23, 23, 23)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(labelEstadoConexion))
@@ -154,36 +262,6 @@ public class VentanaChat extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
-    
-    private void botonEnviarMensajeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEnviarMensajeActionPerformed
-        //Probando mensajes con formato en JTextPane
-        try {
-            kit.insertHTML(doc, doc.getLength(), "<font color='red'><u>"+textAreaMensaje.getText()+"</u></font>", 0, 0, null);
-        } catch (BadLocationException ex) {
-            System.out.println("Error: Referencia a una localizacion no existente");
-        } catch (IOException ex) {
-            System.out.println("Error IO");
-        }
-        textAreaMensaje.setText("");
-    }//GEN-LAST:event_botonEnviarMensajeActionPerformed
-
-       //Al presionar Enter
-    private void textAreaMensajeKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textAreaMensajeKeyPressed
-        
-    }//GEN-LAST:event_textAreaMensajeKeyPressed
-
-  
-    public static void main(String args[]) {
-        
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new VentanaChat().setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonEnviarMensaje;
     private javax.swing.JLabel jLabel1;

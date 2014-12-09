@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package Servicio;
 
@@ -39,7 +34,7 @@ public class Servicio extends Thread {
     /**
      * Constructor que inicializa la ip del grupo a unirse y el puerto de comunicación
      * @param grupo grupo indica la dirección ip del grupo al que se unirá el usuario el valor por default es 230.1.1.1
-     * @param puertoEscucha puertoEscucha indica el puerto por el cual se reciviran los mensajes de cualquier usuario, el valor por default es 4001
+     * @param puertoEscucha puertoEscucha indica el puerto por el cual se recibiran los mensajes de cualquier usuario, el valor por default es 4001
      * @param puertoEnvio puertoEnvio indica el puerto por el cual se enviaran los mensajes, el valor por default es 4000
      * @param chatUsuario  chat representa la vista del cliente, la cual se utilizará para poder imprimir los mensajes recibidos
      */

@@ -3,57 +3,59 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
 package DTO;
 
 import java.io.Serializable;
 
 /**
- * Esta clase es una abstacción de un mensaje real, creado para poder ser enviado por sockets
- * @author ivan 
+ * Esta clase es una abstacción de un mensaje real, creado para poder ser
+ * enviado por sockets
+ *
+ * @author ivan
  */
 public class Mensaje implements Serializable {
-    
+
     private int tipoMensaje;
-    
     private String datos;
-    
     private Usuario remitente;
     private Usuario destinatario;
-    
+
     /**
-     *Constructor de la clase mensaje que inicializa todas las variables de la clase
+     * Constructor de la clase mensaje que inicializa todas las variables de la
+     * clase
+     *
      * @param tipo tipo describe el modo en que se tratara al mensaje
      * @param datos datos describe el cuerpo del mensaje
      * @param remitente remitente describe el usuario que envia el mensaje
-     * @param destinatario destinatario describe el ururaio al que va dirigido el mensaje
+     * @param destinatario destinatario describe el usuario al que va dirigido
+     * el mensaje
      */
-    public Mensaje(int tipo, 
-            String datos, 
-            Usuario remitente, 
-            Usuario destinatario){
-        
+    public Mensaje(int tipo,
+            String datos,
+            Usuario remitente,
+            Usuario destinatario) {
+
         this.tipoMensaje = tipo;
         this.datos = datos;
         this.remitente = remitente;
         this.destinatario = destinatario;
-        
+
     }
-    
+
     /**
-     *Constructor de la clase mensaje que inicializa todas las variables de la clase
+     * Constructor de la clase mensaje que inicializa todas las variables de la
+     * clase
+     *
      * @param tipo tipo describe el modo en que se tratara al mensaje
      * @param datos datos describe el cuerpo del mensaje
      */
-    public Mensaje(int tipo, 
-            String datos){
-        
+    public Mensaje(int tipo,
+            String datos) {
+
         this.tipoMensaje = tipo;
         this.datos = datos;
         this.remitente = null;
         this.destinatario = null;
-        
     }
 
     //<editor-fold desc="Geters y Seters de la clase">
@@ -87,6 +89,6 @@ public class Mensaje implements Serializable {
 
     public void setDestinatario(Usuario destinatario) {
         this.destinatario = destinatario;
-    }    
+    }
     //</editor-fold>
 }
