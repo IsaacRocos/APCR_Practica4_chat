@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package Servicio;
 
@@ -168,7 +163,7 @@ public class Servicio extends Thread {
                 err = "Error al recibir un mensaje, El objeto recibido no es de tipo Mensaje:\n"+cnfe.getMessage();
                 mnsRecibido = new Mensaje(5,err);
             }
-            this.getChat().procesarMesnaje(mnsRecibido);
+            this.getChat().procesarMensaje(mnsRecibido);
         }
     }
 

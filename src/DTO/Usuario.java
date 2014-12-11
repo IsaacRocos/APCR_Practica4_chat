@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.io.Serializable;
 
 /**
- *Esta clase contiene los datos necesarios de un usuario para que el sistema pueda identificarlo
+ *Esta clase contiene los datos necesarios de un usuario, para que el sistema pueda identificarlo
  * @author ivan
  */
 public class Usuario implements Serializable {

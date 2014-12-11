@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package Utileria;
 
@@ -23,7 +18,7 @@ public class Utileria {
     public static String pathProyecto = System.getProperty("user.dir");
     
     /**
-     *Metodo para poder traducir un tipo de mensaje
+     *Metodo para poder traducir un tipo de mensaje.
      * @param id id es el tipo de mensaje a traducir
      * @return Regresa la descripcion del tipo de mensaje recibido
      */
@@ -43,7 +38,7 @@ public class Utileria {
     }
     
     /**
-     * Metodo que traduce un codigo de emotico a codigo en html
+     * Metodo que traduce un codigo de emotico a codigo en html.
      * @param emotico emotico describe una imagen emotico por medio de una secuencia de caracteres
      * @return Regresa una etiqueta imagen de HTML del emotico
      */
@@ -56,7 +51,7 @@ public class Utileria {
     }
     
     /**
-     * Convierte una variable tipo Object a un flujo de bytes
+     * Convierte una variable tipo Object a un flujo de bytes.
      * @param obj obj es el objeto que se tratara de convertir a bytes
      * @return Regrea un flujo de bytes con los datos del objeto
      * @throws IOException 
@@ -69,7 +64,7 @@ public class Utileria {
     }
     
     /**
-     * Convierte un flujo de Bytes a una varible tipo Object
+     * Convierte un flujo de Bytes a una varible tipo Object.
      * @param objBytes objBytes Es el flujo de bytes que se convertiran a objeto
      * @return Un variable tipo Object con los datos del arreglo de bytes
      * @throws IOException

@@ -33,7 +33,7 @@ public class pruebaServicio implements Chat {
     }
 
     @Override
-    public void procesarMesnaje(Mensaje mensaje) {
+    public void procesarMensaje(Mensaje mensaje) {
         //Se implementan los casos para cada posible mensaje recibido, login, logout, etc.
         System.out.println("Mensaje Recibido: "+mensaje.getDatos()+" tipo: "+Utileria.traducirMensaje(mensaje.getTipoMensaje()));
     }
