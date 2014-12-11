@@ -2,13 +2,10 @@ package Interfaz;
 
 import DTO.Mensaje;
 import Servicio.Servicio;
-import Servicio.ServicioUsuario;
 import Utileria.Chat;
 import java.awt.Color;
 import javax.swing.JFrame;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
@@ -23,11 +20,9 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
     Servicio servicio;
     HTMLEditorKit kit;
     HTMLDocument doc;
-    ServicioUsuario servicioUsuario;
     String nombreUsuario;
     String grupo;
-    int puertoEnvio;
-    int puertoEscucha;
+    int puerto;
 
     public VentanaChat() {
         System.out.println("InitCoponents...");
@@ -41,8 +36,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         this();
         nombreUsuario = ventanaInicio.getNombreUsuario();
         grupo = ventanaInicio.getGrupo();
-        puertoEnvio = ventanaInicio.getPuertoEnvio();
-        puertoEscucha = ventanaInicio.getPuertoEscucha();
+        puerto = ventanaInicio.getPuerto();
 
         labelNombreDeUsuario.setText(nombreUsuario);
         
@@ -105,7 +99,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
     private boolean conectaServicio() {
         boolean estadoConexion = false;
         System.out.println("Intentando conectar al grupo:" + grupo);
-        servicio = new Servicio(grupo, puertoEnvio, puertoEscucha, servicioUsuario);
+        servicio = new Servicio(grupo, puerto, (Chat)this);
         try {
             servicio.unirAlGrupo();
             estadoConexion = true;
@@ -132,6 +126,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
 
     /**
      * Método main
+     * @param args
      */
     public static void main(String args[]) {
         VentanaChat ventanaChat;

@@ -10,8 +10,7 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
 
     String nombreUsuario;
     String grupo;
-    int puertoEnvio;
-    int puertoEscucha;
+    int puerto;
     boolean datosListos;
 
     public String getNombreUsuario() {
@@ -22,12 +21,8 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
         return grupo;
     }
 
-    public int getPuertoEnvio() {
-        return puertoEnvio;
-    }
-
-    public int getPuertoEscucha() {
-        return puertoEscucha;
+    public int getPuerto() {
+        return puerto;
     }
 
     public boolean getDatosListos() {
@@ -44,7 +39,6 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
     }
 
     public void mostrarVentana(Inicio ventanaInicio) {
-
         java.awt.EventQueue.invokeLater(ventanaInicio);
     }
 
@@ -52,142 +46,83 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jButConectar = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
         jTFNombreUsuario = new javax.swing.JTextField();
         jTFIPGrupo = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jTFPtoEnvio = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        jTFPtoEscucha = new javax.swing.JTextField();
+        jTFPuerto = new javax.swing.JTextField();
+        jButConectar = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Conectar al Chat");
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/port.png"))); // NOI18N
 
         jLabel1.setText("Nombre de Usuario:");
 
         jLabel2.setText("Conectar a IP de Grupo:");
 
-        jButConectar.setText("Conectar");
-        jButConectar.setEnabled(false);
-        jButConectar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButConectarActionPerformed(evt);
-            }
-        });
-//jTFNombreUsuario
-        jTFNombreUsuario.setForeground(new java.awt.Color(51, 51, 51));
-        jTFNombreUsuario.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTFNombreUsuario.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
-            }
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
-            }
-        });
-//jTFIPGrupo
-        jTFIPGrupo.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel4.setText("Puerto:");
+
         jTFIPGrupo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTFIPGrupo.setText("230.1.1.1");
-        jTFIPGrupo.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
-            }
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
-            }
-        });
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img/port.png"))); // NOI18N
+        jTFPuerto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTFPuerto.setText("4000");
 
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel4.setText("Puerto Envio:");
-//jTFPtoENVIO
-        jTFPtoEnvio.setForeground(new java.awt.Color(51, 51, 51));
-        jTFPtoEnvio.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTFPtoEnvio.setText("4000");
-        
-        jTFPtoEnvio.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
-            }
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
-            }
-        });
-		
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel5.setText("Puerto Escucha:");
-// jTFPtoEscucha
-        jTFPtoEscucha.setForeground(new java.awt.Color(51, 51, 51));
-        jTFPtoEscucha.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTFPtoEscucha.setText("4001");
-        jTFPtoEscucha.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
-            }
-			public void keyReleased(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
-            }
-        });
+        jButConectar.setText("Conectar");
+        jButConectar.setEnabled(false);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(190, 190, 190)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(26, 26, 26)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(31, 31, 31)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jTFNombreUsuario)
+                            .addComponent(jTFIPGrupo, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel2)
-                                .addComponent(jLabel1))
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButConectar, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE)
-                    .addComponent(jTFNombreUsuario)
-                    .addComponent(jTFIPGrupo)
-                    .addComponent(jTFPtoEnvio)
-                    .addComponent(jTFPtoEscucha))
-                .addGap(22, 22, 22))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(31, 31, 31)
+                                .addComponent(jButConectar, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTFPuerto, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(33, 33, 33)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(jTFNombreUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(28, 28, 28)
+                        .addGap(34, 34, 34)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
                             .addComponent(jTFIPGrupo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(31, 31, 31)
+                        .addGap(37, 37, 37)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(jTFPtoEnvio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(1, 1, 1)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jTFPtoEscucha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
-                .addComponent(jButConectar, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                            .addComponent(jTFPuerto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4))
+                        .addGap(18, 18, 18)
+                        .addComponent(jButConectar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         pack();
@@ -196,8 +131,7 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
     private void jButConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButConectarActionPerformed
         System.out.println("Verificando datos...");
         try {
-            puertoEnvio = Integer.parseInt(jTFPtoEnvio.getText());
-            puertoEscucha = Integer.parseInt(jTFPtoEscucha.getText());
+            puerto = Integer.parseInt(jTFPuerto.getText());
             nombreUsuario = jTFNombreUsuario.getText();
             grupo = jTFIPGrupo.getText();
 //            setDatosListos(true);
@@ -217,7 +151,7 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
      * Verifica que todos los campos de texo no estén vacíos.
      */
     private void jTFDatosKeyPressed(java.awt.event.KeyEvent evt) {
-        if (jTFNombreUsuario.getText().equals("") || jTFIPGrupo.getText().equals("") || jTFPtoEnvio.getText().equals("") || jTFPtoEscucha.getText().equals("")) {
+        if (jTFNombreUsuario.getText().equals("") || jTFIPGrupo.getText().equals("") || jTFPuerto.getText().equals("") ) {
             jButConectar.setEnabled(false);
         } else {
             jButConectar.setEnabled(true);
@@ -240,11 +174,9 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JTextField jTFIPGrupo;
     private javax.swing.JTextField jTFNombreUsuario;
-    private javax.swing.JTextField jTFPtoEnvio;
-    private javax.swing.JTextField jTFPtoEscucha;
+    private javax.swing.JTextField jTFPuerto;
     // End of variables declaration//GEN-END:variables
 
     @Override
