@@ -1,5 +1,6 @@
 package Interfaz;
 
+import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
 /**
@@ -65,15 +66,40 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
 
         jLabel4.setText("Puerto:");
 
+        jTFNombreUsuario.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jTFNombreUsuario.addKeyListener(new java.awt.event.KeyAdapter() {
+	    @Override
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTFDatosKeyPressed(evt);
+            }
+        });
+
         jTFIPGrupo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTFIPGrupo.setText("230.1.1.1");
+	jTFIPGrupo.addKeyListener(new java.awt.event.KeyAdapter() {
+	    @Override
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTFDatosKeyPressed(evt);
+            }
+        });
 
         jTFPuerto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTFPuerto.setText("4000");
+	jTFPuerto.addKeyListener(new java.awt.event.KeyAdapter() {
+	    @Override
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTFDatosKeyPressed(evt);
+            }
+        });
 
         jButConectar.setText("Conectar");
         jButConectar.setEnabled(false);
-
+	jButConectar.addActionListener(new java.awt.event.ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent evt) {
+			jButConectarActionPerformed(evt);
+                }
+	});
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -146,6 +172,10 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
 //            setDatosListos(false);
         }
     }//GEN-LAST:event_jButConectarActionPerformed
+
+    private void jTFNombreUsuarioKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTFNombreUsuarioKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTFNombreUsuarioKeyPressed
 
     /**
      * Verifica que todos los campos de texo no estén vacíos.
