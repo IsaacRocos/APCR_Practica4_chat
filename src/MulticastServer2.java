@@ -17,23 +17,29 @@ public class MulticastServer2 extends Thread{
     		System.exit(1);
     	}
 /********************inicia loop***************************/
-	for(;;){
-    	try{
-    		MulticastSocket socket = new MulticastSocket(MCAST_PORT);
-    		socket.joinGroup(group); // se configura para escuchar el paquete
-    		DatagramPacket packet = new DatagramPacket(msg.getBytes(),msg.length(),group,MCAST_PORT);
-    		System.out.println("Enviando: " + msg+"  con un TTL= "+socket.getTimeToLive());
-    		socket.send(packet);
-    		socket.close();    		
-    	}catch(IOException e){
-    		e.printStackTrace();
-    		System.exit(2);
-    	}
+        try{
+            MulticastSocket socket = new MulticastSocket(MCAST_PORT);
+            socket.joinGroup(group); // se configura para escuchar el paquete
+            for(;;){
+            try{
+                    DatagramPacket packet = new DatagramPacket(msg.getBytes(),msg.length(),group,MCAST_PORT);
+                    System.out.println("Enviando: " + msg+"  con un TTL= "+socket.getTimeToLive());
+                    socket.send(packet);	
+            }catch(IOException e){
+                socket.close();    	
+                    e.printStackTrace();
+                    System.exit(2);
+            }
 
-	try{
-		Thread.sleep(1000*5);
-	}catch(InterruptedException ie){}
-        }//for;;
+            try{
+                    Thread.sleep(1000*5);
+            }catch(InterruptedException ie){
+            socket.close();    	}
+            }//for;;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
 /*****************termina Loop***************************/    	
 
 	}//run

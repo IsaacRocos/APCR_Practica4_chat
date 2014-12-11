@@ -27,9 +27,7 @@ public class Servicio extends Thread {
     
     private String HOST_GRUPO;
     private String HOST_LOCAL_ENVIO;
-    private String HOST_LOCAL_ESCUCHA;
-    private int PUERTO_ENVIO;
-    private int PUERTO_ESCUCHA;
+    private int PUERTO;
     
     private Chat chat;
     
@@ -39,33 +37,29 @@ public class Servicio extends Thread {
     /**
      * Constructor que inicializa la ip del grupo a unirse y el puerto de comunicación
      * @param grupo grupo indica la dirección ip del grupo al que se unirá el usuario el valor por default es 230.1.1.1
-     * @param puertoEscucha puertoEscucha indica el puerto por el cual se reciviran los mensajes de cualquier usuario, el valor por default es 4001
-     * @param puertoEnvio puertoEnvio indica el puerto por el cual se enviaran los mensajes, el valor por default es 4000
+     * @param puerto puerto indica el puerto por el cual se reciviran y enviaran los mensajes de cualquier usuario, el valor por default es 4000
      * @param chatUsuario  chat representa la vista del cliente, la cual se utilizará para poder imprimir los mensajes recibidos
      */
-    public Servicio(String grupo, int puertoEnvio, int puertoEscucha, Chat chatUsuario){
+    public Servicio(String grupo, int puerto, Chat chatUsuario){
         this.HOST_GRUPO = grupo;
-        this.PUERTO_ENVIO = puertoEnvio;
+        this.PUERTO = puerto;
         this.HOST_LOCAL_ENVIO = null;
         this.servicioEnvio = null;
         this.servicioEscucha = null;
         this.grupo = null;
-        this.TAM_MNSJ = 900;
+        this.TAM_MNSJ = 9000;
         this.chat = chatUsuario;
     }
     
     /**
      * Constructor que inicializa la ip del grupo a unirse y el puerto de comunicación al valor por default
      * El valor por default de la ip del grupo es 230.1.1.1
-     * El valor por default del puerto de envio de mensajes es 4000
-     * El valor por default del puerto de escucha de mensajes es 4001
+     * El valor por default del puerto de envio y recibo de mensajes es 4000
      * @param chatUsuario  chat representa la vista del cliente, la cual se utilizará para poder imprimir los mensajes recibidos
      */
     public Servicio(Chat chatUsuario){
         this.HOST_GRUPO = "230.1.1.1";
-        this.PUERTO_ENVIO = 4000;
-        this.PUERTO_ESCUCHA = 4001;
-        this.HOST_LOCAL_ESCUCHA = null;
+        this.PUERTO = 4000;
         this.servicioEnvio = null;
         this.servicioEscucha = null;
         this.HOST_LOCAL_ENVIO = null;
@@ -80,12 +74,12 @@ public class Servicio extends Thread {
      * @throws java.net.UnknownHostException Lanzará ña excepción UnknownHostException cuando no pueda obtener la ip local, o cuando no pueda resolver la ip del grupo
      */
     public void unirAlGrupo() throws IOException, UnknownHostException{
-        this.setServicioEnvio(new MulticastSocket(this.getPUERTO_ENVIO()));
-        this.setServicioEscucha(new MulticastSocket(this.getPUERTO_ESCUCHA()));
+        this.setServicioEnvio(new MulticastSocket(this.getPUERTO()));
+        this.setServicioEscucha(new MulticastSocket(this.getPUERTO()));
         this.setGrupo(this.validarDireccionDelGrupo());
         this.getServicioEnvio().joinGroup(this.getGrupo());
         this.getServicioEscucha().joinGroup(this.getGrupo());
-        System.out.println("Se ha logrado unir al grupo con la ip : "+this.getHOST_GRUPO()+" con el puerto: "+this.getPUERTO_ENVIO()+", desde: "+this.getHOST_LOCAL_ENVIO());
+        System.out.println("Se ha logrado unir al grupo con la ip : "+this.getHOST_GRUPO()+" con el puerto: "+this.getPUERTO()+", desde: "+this.getHOST_LOCAL_ENVIO());
     }
     
     /**
@@ -104,10 +98,12 @@ public class Servicio extends Thread {
      * @throws IOException
      */
     public void enviarMensaje(Mensaje mensaje) throws IOException{
+        System.out.println("Enviando Mensaje: "+mensaje.getDatos());
         byte[] mensajeBytes = Utileria.serailizarObjeto(mensaje);
         this.enviarTamanioMensaje(mensajeBytes.length, this.getGrupo());
-        DatagramPacket paquete = new DatagramPacket(mensajeBytes,mensajeBytes.length,this.getGrupo(),this.getPUERTO_ENVIO());
+        DatagramPacket paquete = new DatagramPacket(mensajeBytes,mensajeBytes.length,this.getGrupo(),this.getPUERTO());
         this.getServicioEnvio().send(paquete);
+        System.out.println("Mensaje Enviado");
     }
     
     /**
@@ -117,9 +113,11 @@ public class Servicio extends Thread {
      * @throws IOException 
      */
     private void enviarTamanioMensaje(Integer tamanio, InetAddress ip) throws IOException{
+        System.out.println("Enviando Tamanio mensaje: "+tamanio);
         byte[] tamanioBytes = Utileria.serailizarObjeto(tamanio);
-        DatagramPacket paquete = new DatagramPacket(tamanioBytes,tamanioBytes.length,ip,this.getPUERTO_ENVIO());
+        DatagramPacket paquete = new DatagramPacket(tamanioBytes,tamanioBytes.length,ip,this.getPUERTO());
         this.getServicioEnvio().send(paquete);
+        System.out.println("Tamanio mensaje enviado");
     }
     
     /**
@@ -129,10 +127,12 @@ public class Servicio extends Thread {
      * @throws java.lang.ClassNotFoundException
      */
     public Mensaje recibirMensaje() throws IOException, ClassNotFoundException{
+        System.out.println("Recibiendo mensaje");
         int tamanio = this.recibirTamanioMensaje();
         byte[] mensajeBytes = new byte[tamanio];
         DatagramPacket paquete = new DatagramPacket(mensajeBytes,tamanio);
         this.getServicioEscucha().receive(paquete);
+        System.out.println("Mensaje recibido: "+((Mensaje)Utileria.deseralizarObjeto(paquete.getData())).getDatos());
         return (Mensaje)Utileria.deseralizarObjeto(paquete.getData());
     }
     
@@ -143,9 +143,11 @@ public class Servicio extends Thread {
      * @throws java.lang.ClassNotFoundException 
      */
     private int recibirTamanioMensaje() throws IOException, ClassNotFoundException{
+        System.out.println("Recibiendo tamanio mensaje");
         byte[] tamanioBytes = new byte[this.TAM_MNSJ];
         DatagramPacket paquete = new DatagramPacket(tamanioBytes,tamanioBytes.length);
         this.getServicioEscucha().receive(paquete);
+        System.out.println("tamanio mensaje recibido:"+ (int)Utileria.deseralizarObjeto(paquete.getData()));
         return (int)Utileria.deseralizarObjeto(paquete.getData());
     }
     
@@ -200,17 +202,17 @@ public class Servicio extends Thread {
     }
 
     /**
-     * @return the PUERTO_ENVIO
+     * @return the PUERTO
      */
-    public int getPUERTO_ENVIO() {
-        return PUERTO_ENVIO;
+    public int getPUERTO() {
+        return PUERTO;
     }
 
     /**
-     * @param PUERTO_ENVIO the PUERTO_ENVIO to set
+     * @param PUERTO the PUERTO to set
      */
-    public void setPUERTO_ENVIO(int PUERTO_ENVIO) {
-        this.PUERTO_ENVIO = PUERTO_ENVIO;
+    public void setPUERTO(int PUERTO) {
+        this.PUERTO = PUERTO;
     }
 
     /**
@@ -240,35 +242,7 @@ public class Servicio extends Thread {
     public void setGrupo(InetAddress grupo) {
         this.grupo = grupo;
     }
-
-    /**
-     * @return the HOST_LOCAL_ESCUCHA
-     */
-    public String getHOST_LOCAL_ESCUCHA() {
-        return HOST_LOCAL_ESCUCHA;
-    }
-
-    /**
-     * @param HOST_LOCAL_ESCUCHA the HOST_LOCAL_ESCUCHA to set
-     */
-    public void setHOST_LOCAL_ESCUCHA(String HOST_LOCAL_ESCUCHA) {
-        this.HOST_LOCAL_ESCUCHA = HOST_LOCAL_ESCUCHA;
-    }
-
-    /**
-     * @return the PUERTO_ESCUCHA
-     */
-    public int getPUERTO_ESCUCHA() {
-        return PUERTO_ESCUCHA;
-    }
-
-    /**
-     * @param PUERTO_ESCUCHA the PUERTO_ESCUCHA to set
-     */
-    public void setPUERTO_ESCUCHA(int PUERTO_ESCUCHA) {
-        this.PUERTO_ESCUCHA = PUERTO_ESCUCHA;
-    }
-
+    
     /**
      * @return the servicioEscucha
      */

@@ -9,8 +9,6 @@ import DTO.Mensaje;
 import Utileria.Chat;
 import Utileria.Utileria;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -20,21 +18,18 @@ public class pruebaServicio implements Chat {
     
     public static void main(String args[]){
         pruebaServicio pS = new pruebaServicio();
-        Servicio s = new Servicio(pS);
+        Servicio s = new Servicio("230.1.1.1",8082,pS);
         try {
             s.unirAlGrupo();
+            s.start();
+            try {
+                s.enviarMensaje(new Mensaje(1,"Hola mundo"));
+            } catch (IOException ex) {
+                System.err.println("Error al enviar un mensaje: "+ex);
+            }
         } catch (IOException ex) {
-            System.err.println("Error al unirse al grupo");
+            System.err.println("Error al unirse al grupo:"+ex);
         }
-        s.start();
-        
-        System.out.println("Enviando Mensaje");
-        try {
-            s.enviarMensaje(new Mensaje(1,"Hola mundo"));
-        } catch (IOException ex) {
-            System.err.println("Error al enviar un mensaje");
-        }
-        System.out.println("Mensaje enviado");
     }
 
     @Override
