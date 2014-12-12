@@ -97,7 +97,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
     }
 
     private boolean conectaServicio() {
-        boolean estadoConexion = false;
+        boolean estadoConexion;
         System.out.println("Intentando conectar al grupo:" + grupo);
         servicio = new Servicio(grupo, puerto, (Chat)this);
         try {

@@ -1,6 +1,5 @@
 package Interfaz;
 
-import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
 /**
@@ -68,38 +67,35 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
 
         jTFNombreUsuario.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTFNombreUsuario.addKeyListener(new java.awt.event.KeyAdapter() {
-	    @Override
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTFDatosKeyReleased(evt);
             }
         });
 
         jTFIPGrupo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTFIPGrupo.setText("230.1.1.1");
-	jTFIPGrupo.addKeyListener(new java.awt.event.KeyAdapter() {
-	    @Override
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
+        jTFIPGrupo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTFDatosKeyReleased(evt);
             }
         });
 
         jTFPuerto.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         jTFPuerto.setText("4000");
-	jTFPuerto.addKeyListener(new java.awt.event.KeyAdapter() {
-	    @Override
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTFDatosKeyPressed(evt);
+        jTFPuerto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTFDatosKeyReleased(evt);
             }
         });
 
         jButConectar.setText("Conectar");
         jButConectar.setEnabled(false);
-	jButConectar.addActionListener(new java.awt.event.ActionListener() {
-		@Override
-		public void actionPerformed(ActionEvent evt) {
-			jButConectarActionPerformed(evt);
-                }
-	});
+        jButConectar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButConectarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -173,20 +169,14 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
         }
     }//GEN-LAST:event_jButConectarActionPerformed
 
-    private void jTFNombreUsuarioKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTFNombreUsuarioKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTFNombreUsuarioKeyPressed
-
-    /**
-     * Verifica que todos los campos de texo no estén vacíos.
-     */
-    private void jTFDatosKeyPressed(java.awt.event.KeyEvent evt) {
+    private void jTFDatosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTFDatosKeyReleased
         if (jTFNombreUsuario.getText().equals("") || jTFIPGrupo.getText().equals("") || jTFPuerto.getText().equals("") ) {
             jButConectar.setEnabled(false);
         } else {
             jButConectar.setEnabled(true);
         }
-    }
+    }//GEN-LAST:event_jTFDatosKeyReleased
+
     /**
      * @param args the command line arguments
      */
@@ -197,7 +187,7 @@ public class Inicio extends javax.swing.JFrame implements Runnable {
 //                new Inicio().setVisible(true);
 //            }
 //        });
-//    }
+//    }   
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButConectar;
     private javax.swing.JLabel jLabel1;
