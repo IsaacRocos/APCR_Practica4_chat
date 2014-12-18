@@ -8,6 +8,7 @@ package DTO;
 
 import java.util.ArrayList;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  *Esta clase contiene los datos necesarios de un usuario, para que el sistema pueda identificarlo
@@ -31,6 +32,32 @@ public class Usuario implements Serializable {
         this.host = host;
         
         this.conversacion = new ArrayList<>();
+    }
+    
+    @Override
+    public String toString(){
+        return nombre;
+    }
+    
+    @Override
+    public boolean equals(Object objeto){
+        if(objeto instanceof Usuario){
+            Usuario temporal = (Usuario)objeto;
+            if(this.nombre.equals(temporal.nombre) && this.host.equals(temporal.host)){
+                return true;
+            }else{
+                return false;
+            }
+            
+        }else return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 47 * hash + Objects.hashCode(this.nombre);
+        hash = 47 * hash + Objects.hashCode(this.host);
+        return hash;
     }
     
     //<editor-fold desc="Geters y Seters de la clase">
@@ -58,5 +85,8 @@ public class Usuario implements Serializable {
         this.conversacion = conversacion;
     }
     //</editor-fold>
+    
+    
+    
     
 }

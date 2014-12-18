@@ -1,11 +1,15 @@
 package Interfaz;
 
 import DTO.Mensaje;
+import DTO.Usuario;
 import Servicio.Servicio;
 import Utileria.Chat;
+import Utileria.Utileria;
 import java.awt.Color;
+import static java.awt.image.ImageObserver.ERROR;
 import javax.swing.JFrame;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
@@ -18,18 +22,18 @@ import javax.swing.text.html.HTMLEditorKit;
 public class VentanaChat extends JFrame implements Runnable, Chat {
 
     Servicio servicio;
-    HTMLEditorKit kit;
-    HTMLDocument doc;
+    HTMLEditorKit kit = new HTMLEditorKit();
+    HTMLDocument doc = new HTMLDocument();
     String nombreUsuario;
     String grupo;
     int puerto;
+    Usuario usuario;
+    Usuario destinatario;
+    ArrayList<Usuario> listaDeUsuarios;
 
     public VentanaChat() {
         System.out.println("InitCoponents...");
         initComponents();
-        pruebaLista(); // prueba el despliegue de nombres de usuarios conectados.
-        // En este caso, se debería hacer la llamada a el método 
-        // que seencarga de verificar qué usuarios están conectados.
     }
 
     private VentanaChat(Inicio ventanaInicio) {
@@ -37,14 +41,17 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         nombreUsuario = ventanaInicio.getNombreUsuario();
         grupo = ventanaInicio.getGrupo();
         puerto = ventanaInicio.getPuerto();
-
         labelNombreDeUsuario.setText(nombreUsuario);
-        
+        this.usuario = new Usuario(nombreUsuario, grupo);
+        listaDeUsuarios = new ArrayList<Usuario>();
+        listaDeUsuarios.add(new Usuario("Todos", grupo));
     }
 
-    private void pruebaLista() {
-        String[] usuarios = {"Todos", "Erick", "Ivan", "Ferch", "Isaac"};
-        this.listaDeUsuarios.setListData(usuarios);
+    private void actualizaListaUsuarios() {
+        //Object[] usuarios = {new Usuario("Ibeth", grupo), new Usuario("Erick", grupo), new Usuario("Ivan", grupo), new Usuario("Ferch", grupo), new Usuario("Isaac", grupo)};
+        Object[] usuarios = listaDeUsuarios.toArray();
+        this.jListUsuarios.setListData(usuarios);
+        this.jListUsuarios.setSelectedIndex(0);
     }
 
     /**
@@ -53,17 +60,33 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
      *
      * @param mensaje
      */
-    private void mostrarMensajeVentana(String mensaje) {
-        //Probando mensajes con formato en JTextPane
+    private void mostrarMensajeVentana(Mensaje mensaje) {
+
+        String mensajeForm = Utileria.formatearMensaje(mensaje,usuario);
+        System.out.println(mensajeForm);
         try {
-            //kit.insertHTML(doc, doc.getLength(), "<font color='red'><u>" + textAreaMensaje.getText() + "</u></font>", 0, 0, null);
-            kit.insertHTML(doc, doc.getLength(), mensaje, 0, 0, null);
+            kit.insertHTML(doc, doc.getLength(), mensajeForm, 0, 0, null);
         } catch (BadLocationException ex) {
-            System.out.println("Error: Referencia a una localizacion no existente");
+            System.err.println("Error: Referencia a una localizacion no existente");
         } catch (IOException ex) {
-            System.out.println("Error IO");
+            System.err.println("Error IO");
         }
         textAreaMensaje.setText("");
+    }
+
+    public void prepararMensaje() {
+        String mensajeVentana = textAreaMensaje.getText();
+        Mensaje mensaje;
+        if ((fijarDestinatario()) == 0) { // seleccionado mensaje a todos.
+            mensaje = new Mensaje(1, mensajeVentana, usuario, null);
+        } else { // seleccionado unusuario (mensaje privado)
+            mensaje = new Mensaje(2, mensajeVentana, usuario, destinatario);
+        }
+        if (enviarMensaje(mensaje)) { // si consigue enviar elmensaje
+            mostrarMensajeVentana(mensaje);
+        } else {
+            JOptionPane.showMessageDialog(null, "No se pudo enviar su mensaje,\nintentelo de nuevo por favor.", "Error", ERROR);
+        }
     }
 
     /**
@@ -74,9 +97,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
      * "botonEnviar".
      */
     private void botonEnviarMensajeActionPerformed(java.awt.event.ActionEvent evt) {
-        String mensaje = textAreaMensaje.getText();
-        // mensaje = metodo formato mensaje
-        mostrarMensajeVentana(mensaje);
+        prepararMensaje();
     }
 
     /**
@@ -89,33 +110,93 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
     private void textAreaMensajeKeyPressed(java.awt.event.KeyEvent evt) {
         int codigoTecla = evt.getKeyCode();
         if (codigoTecla == 10) {
-            String mensaje = textAreaMensaje.getText();
-            // mensaje = metodo formato mensaje
-            mostrarMensajeVentana(mensaje);
-
+            prepararMensaje();
         }
     }
 
-    private boolean conectaServicio() {
+    public int fijarDestinatario() {
+        int indice = jListUsuarios.getSelectedIndex();
+        this.destinatario = listaDeUsuarios.get(indice);
+        return indice;
+    }
+
+    private boolean iniciaServicio() {
         boolean estadoConexion;
         System.out.println("Intentando conectar al grupo:" + grupo);
-        servicio = new Servicio(grupo, puerto, (Chat)this);
+        servicio = new Servicio(grupo, puerto, (Chat) this);
         try {
             servicio.unirAlGrupo();
+            servicio.start();
             estadoConexion = true;
+
             labelEstadoConexion.setForeground(Color.GREEN);
             labelEstadoConexion.setText("Conectado a: " + grupo);
+
+            enviarMensaje(new Mensaje(0, "", usuario, null)); // mensaje login
+            actualizaListaUsuarios();
         } catch (IOException e) {
             estadoConexion = false;
-            System.err.println("Ocurri\u00f3 un error al intencat conectar al servidor");
+            System.err.println("Ocurri\u00f3 un error al intentar conectar al servidor");
             JOptionPane.showMessageDialog(null, "Ocurri\u00f3 un error al unirse al grupo.\nPor favor, intentelo de nuevo.", "Error", ERROR);
         }
         return estadoConexion;
     }
 
+    public boolean enviarMensaje(Mensaje mensaje) {
+        try {
+            servicio.enviarMensaje(mensaje);
+            return true;
+        } catch (IOException ioe) {
+            System.err.println("Error al enviar el mensaje");
+            return false;
+        }
+    }
+
     @Override
     public void procesarMensaje(Mensaje mensaje) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        int tipoMensaje = mensaje.getTipoMensaje();
+        System.out.println("Procesando mensaje Tipo: " + tipoMensaje);
+        switch (tipoMensaje) {
+            case 0: // LogIn
+                if (!mensaje.getRemitente().equals(this.usuario)) {
+                    mostrarMensajeVentana(mensaje);
+                    Usuario nuevoUConect = mensaje.getRemitente();
+                    enviarMensaje(new Mensaje(5, "", this.usuario, nuevoUConect)); // envia notificación de conexión.
+                    if (!listaDeUsuarios.contains(nuevoUConect)) {
+                        listaDeUsuarios.add(nuevoUConect);
+                    }
+                    actualizaListaUsuarios();
+                }
+                break;
+            case 1: // Msj para todos
+                if (!mensaje.getRemitente().equals(this.usuario)) {
+                    mostrarMensajeVentana(mensaje);
+                }
+                break;
+            case 2: // Msj Privado
+                if (mensaje.getDestinatario().equals(this.usuario)) {
+                    mostrarMensajeVentana(mensaje);
+                }
+                break;
+            case 3: // Msj LogOut
+                mostrarMensajeVentana(mensaje);
+                Usuario UDesConect = mensaje.getRemitente();
+                listaDeUsuarios.remove(UDesConect);
+                actualizaListaUsuarios();
+                break;
+            case 4: // Error al leer msj
+                mostrarMensajeVentana(mensaje);
+                break;
+            case 5: //Actualización de conexión
+                if (!mensaje.getRemitente().equals(this.usuario)) {
+                    Usuario UConect = mensaje.getRemitente();
+                    if (!listaDeUsuarios.contains(UConect)) {
+                        listaDeUsuarios.add(UConect);
+                    }
+                    actualizaListaUsuarios();
+                }
+                break;
+        }
     }
 
     @Override
@@ -126,6 +207,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
 
     /**
      * Método main
+     *
      * @param args
      */
     public static void main(String args[]) {
@@ -139,11 +221,10 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
                 System.out.println("InterrumptedException");
             }
         }
-        
         ventanaChat = new VentanaChat(ventanaInicio);
-
-        if (ventanaChat.conectaServicio()) {
+        if (ventanaChat.iniciaServicio()) {
             java.awt.EventQueue.invokeLater(ventanaChat);
+            ventanaInicio.dispose();
         }
     }
 
@@ -158,7 +239,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         jScrollPane1 = new javax.swing.JScrollPane();
         textPaneMensajes = new javax.swing.JTextPane();
         jScrollPane2 = new javax.swing.JScrollPane();
-        listaDeUsuarios = new javax.swing.JList();
+        jListUsuarios = new javax.swing.JList();
         jLabel1 = new javax.swing.JLabel();
         labelEstadoConexion = new javax.swing.JLabel();
         labelNombreDeUsuario = new javax.swing.JLabel();
@@ -167,7 +248,16 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         textAreaMensaje = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("<<Chat en Grupo>>");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         botonEnviarMensaje.setText("Enviar");
         botonEnviarMensaje.addActionListener(new java.awt.event.ActionListener() {
@@ -178,12 +268,15 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
 
         textPaneMensajes.setEditable(false);
         textPaneMensajes.setContentType("text/html"); // NOI18N
+		textPaneMensajes.setEditorKit(kit);
+        textPaneMensajes.setDocument(doc);
+        
         jScrollPane1.setViewportView(textPaneMensajes);
 
-        listaDeUsuarios.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
-        listaDeUsuarios.setToolTipText("Selecciona a los destinatarios");
-        listaDeUsuarios.setSelectionBackground(new java.awt.Color(0, 204, 102));
-        jScrollPane2.setViewportView(listaDeUsuarios);
+        jListUsuarios.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
+        jListUsuarios.setToolTipText("Selecciona a los destinatarios");
+        jListUsuarios.setSelectionBackground(new java.awt.Color(0, 204, 102));
+        jScrollPane2.setViewportView(jListUsuarios);
 
         jLabel1.setFont(new java.awt.Font("Calibri", 1, 11)); // NOI18N
         jLabel1.setText("Estado de conexión:");
@@ -257,16 +350,25 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        enviarMensaje(new Mensaje(3, "Fin de sesion", usuario, null));
+    }//GEN-LAST:event_formWindowClosed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        enviarMensaje(new Mensaje(3, "Fin de sesion", usuario, null));
+    }//GEN-LAST:event_formWindowClosing
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonEnviarMensaje;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JList jListUsuarios;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel labelEstadoConexion;
     private javax.swing.JLabel labelNombreDeUsuario;
-    private javax.swing.JList listaDeUsuarios;
     private javax.swing.JTextArea textAreaMensaje;
     private javax.swing.JTextPane textPaneMensajes;
     // End of variables declaration//GEN-END:variables

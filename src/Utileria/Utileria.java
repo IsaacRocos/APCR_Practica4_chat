@@ -1,6 +1,8 @@
 
 package Utileria;
 
+import DTO.Mensaje;
+import DTO.Usuario;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,12 +31,63 @@ public class Utileria {
             return "Mensaje para todos";
         if(id == 2)
             return "Mensaje privado";
-        if(id == 4)
+        if(id == 3)
             return "Mensaje de logout";
-        if(id == 5)
+        if(id == 4)
             return "Mensaje de error al leer un mensaje";
         
         return "Error: Mensaje no reconocido";
+    }
+    
+    /**
+     *Metodo para dar formato a un mensaje.
+     * @param id id es el tipo de mensaje a traducir
+     * @return Regresa la descripcion del tipo de mensaje recibido
+     */
+    public static String formatearMensaje(Mensaje mensajeUsuario,Usuario usuario){
+        
+        int tipoMsj = mensajeUsuario.getTipoMensaje();
+        String mensajeForm ="";
+        int alineación;
+        try {
+            if(usuario.equals(mensajeUsuario.getRemitente())){
+                alineación=0;
+            }else{alineación=1;}
+        } catch (Exception e) {
+            alineación=1;
+        }
+        
+        
+        switch(tipoMsj){
+            case 0:
+                mensajeForm = "<p align=\"center\"><font size=\"3\" color=\"#12FF95\"><b>"+mensajeUsuario.getRemitente()+"</b> se ha conectado al chat</font></p>";
+                break;
+            case 1:
+                if(alineación==0){
+                    mensajeForm = "<p align=\"left\"><font color=\"#1B4B8B\"><b>"+mensajeUsuario.getRemitente()+"</b><br>"+mensajeUsuario.getDatos()+"</font></p>";
+                }else{
+                    mensajeForm = "<p align=\"right\"><font color=\"#000000\"><b>"+mensajeUsuario.getRemitente()+"</b><br>"+mensajeUsuario.getDatos()+"</font></p>";
+                }
+                break;
+            case 2:
+                if(alineación==0){
+                    mensajeForm = "<p align=\"left\"><font color=\"#1B4B8B\"><b>"+mensajeUsuario.getRemitente()+"</b><br>"+mensajeUsuario.getDatos()+"</font></p>";
+                }else{
+                    mensajeForm = "<p align=\"right\"><font color=\"#4A1B8B\"><b>"+mensajeUsuario.getRemitente()+"</b><br>"+mensajeUsuario.getDatos()+"</font></p>";
+                }
+                break;
+            case 3:
+                mensajeForm = "<p align=\"center\"><font size=\"3\" color=\"#FFA410\"><b>"+mensajeUsuario.getRemitente()+"</b> se ha desconectado del chat</font></p>";
+                break;
+            case 4:
+                mensajeForm = "<p align=\"center\"><font size=\"3\" color=\"#FF2155\"> Error al recibir un mensaje </font></p>";
+                break;
+        }
+        
+        
+        
+        return mensajeForm;
+    
     }
     
     /**

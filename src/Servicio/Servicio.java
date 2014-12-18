@@ -93,12 +93,12 @@ public class Servicio extends Thread {
      * @throws IOException
      */
     public void enviarMensaje(Mensaje mensaje) throws IOException{
-        System.out.println("Enviando Mensaje: "+mensaje.getDatos());
+        System.out.println("<"+mensaje.getRemitente()+">" + " Enviando Nuevo Mensaje: "+mensaje.getDatos());
         byte[] mensajeBytes = Utileria.serailizarObjeto(mensaje);
         this.enviarTamanioMensaje(mensajeBytes.length, this.getGrupo());
         DatagramPacket paquete = new DatagramPacket(mensajeBytes,mensajeBytes.length,this.getGrupo(),this.getPUERTO());
         this.getServicioEnvio().send(paquete);
-        System.out.println("Mensaje Enviado");
+        System.out.println("Mensaje Enviado.");
     }
     
     /**
@@ -112,7 +112,7 @@ public class Servicio extends Thread {
         byte[] tamanioBytes = Utileria.serailizarObjeto(tamanio);
         DatagramPacket paquete = new DatagramPacket(tamanioBytes,tamanioBytes.length,ip,this.getPUERTO());
         this.getServicioEnvio().send(paquete);
-        System.out.println("Tamanio mensaje enviado");
+        System.out.println("Tamanio mensaje enviado.");
     }
     
     /**
@@ -122,13 +122,14 @@ public class Servicio extends Thread {
      * @throws java.lang.ClassNotFoundException
      */
     public Mensaje recibirMensaje() throws IOException, ClassNotFoundException{
-        System.out.println("Recibiendo mensaje");
+        System.out.println("Esperando nuevo mensaje...");
         int tamanio = this.recibirTamanioMensaje();
         byte[] mensajeBytes = new byte[tamanio];
         DatagramPacket paquete = new DatagramPacket(mensajeBytes,tamanio);
         this.getServicioEscucha().receive(paquete);
-        System.out.println("Mensaje recibido: "+((Mensaje)Utileria.deseralizarObjeto(paquete.getData())).getDatos());
-        return (Mensaje)Utileria.deseralizarObjeto(paquete.getData());
+        Mensaje msjRecibido = ((Mensaje)Utileria.deseralizarObjeto(paquete.getData()));
+        System.out.println("Mensaje de <"+ msjRecibido.getRemitente() +"> recibido: "+ msjRecibido.getDatos());
+        return msjRecibido;
     }
     
     /**
@@ -138,11 +139,11 @@ public class Servicio extends Thread {
      * @throws java.lang.ClassNotFoundException 
      */
     private int recibirTamanioMensaje() throws IOException, ClassNotFoundException{
-        System.out.println("Recibiendo tamanio mensaje");
+        System.out.println("Esperando tamanio mensaje...");
         byte[] tamanioBytes = new byte[this.TAM_MNSJ];
         DatagramPacket paquete = new DatagramPacket(tamanioBytes,tamanioBytes.length);
         this.getServicioEscucha().receive(paquete);
-        System.out.println("tamanio mensaje recibido:"+ (int)Utileria.deseralizarObjeto(paquete.getData()));
+        System.out.println("Tamanio de mensaje recibido: "+ (int)Utileria.deseralizarObjeto(paquete.getData()));
         return (int)Utileria.deseralizarObjeto(paquete.getData());
     }
     
@@ -158,10 +159,16 @@ public class Servicio extends Thread {
                 mnsRecibido = this.recibirMensaje();
             } catch (IOException ioe) {
                 err = "Error al recibir un mensaje, Error de comunicación:\n"+ioe.getMessage();
-                mnsRecibido = new Mensaje(5,err);
+                System.err.println(err);
+                mnsRecibido = new Mensaje(4,err);
             } catch (ClassNotFoundException cnfe) {
                 err = "Error al recibir un mensaje, El objeto recibido no es de tipo Mensaje:\n"+cnfe.getMessage();
-                mnsRecibido = new Mensaje(5,err);
+                System.err.println(err);
+                mnsRecibido = new Mensaje(4,err);
+            } catch(Exception ex){
+                err = "Error al recibir un mensaje, El objeto recibido no es de tipo Mensaje:\n excepción de tipo: "+ ex.getClass().getSimpleName() +"\n" + ex.getMessage();
+                System.err.println(err);
+                mnsRecibido = new Mensaje(4,err);
             }
             this.getChat().procesarMensaje(mnsRecibido);
         }
