@@ -10,6 +10,9 @@ import static java.awt.image.ImageObserver.ERROR;
 import javax.swing.JFrame;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.html.HTMLDocument;
@@ -192,6 +195,12 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
                 if (!mensaje.getRemitente().equals(this.usuario)) {
                     mostrarMensajeVentana(mensaje);
                     Usuario nuevoUConect = mensaje.getRemitente();
+                    try {
+                        Thread.sleep((int) (new Random().nextDouble() * 2000));
+                    } catch (InterruptedException ex) {
+                        System.out.println("Ocurrió un error, el chat ha sido interrumpido");
+                    }
+
                     enviarMensaje(new Mensaje(5, "Activo", this.usuario, nuevoUConect)); // envia notificación de conexión.
                     if (!listaDeUsuarios.contains(nuevoUConect)) {
                         listaDeUsuarios.add(nuevoUConect);
