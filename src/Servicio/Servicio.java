@@ -67,8 +67,9 @@ public class Servicio extends Thread {
      * Funcion para poder levantar el servicio de chat con el puerto y direccion IP del grupo establecidos
      * @throws java.io.IOException Lanzara la excepcion IOException cuando no se pueda levantar el servicio en el puerto indicado
      * @throws java.net.UnknownHostException Lanzará ña excepción UnknownHostException cuando no pueda obtener la ip local, o cuando no pueda resolver la ip del grupo
+     * @throws java.lang.IllegalArgumentException Cuando el puesrto especificado está fuera de rango.
      */
-    public void unirAlGrupo() throws IOException, UnknownHostException{
+    public void unirAlGrupo() throws IOException, UnknownHostException,IllegalArgumentException{
         this.setServicioEnvio(new MulticastSocket(this.getPUERTO()));
         this.setServicioEscucha(new MulticastSocket(this.getPUERTO()));
         this.setGrupo(this.validarDireccionDelGrupo());

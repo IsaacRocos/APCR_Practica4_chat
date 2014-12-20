@@ -100,7 +100,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         if (enviarMensaje(mensaje)) { // si consigue enviar elmensaje
             mostrarMensajeVentana(mensaje);
         } else {
-            JOptionPane.showMessageDialog(null, "No se pudo enviar su mensaje,\nintentelo de nuevo por favor.", "Error", ERROR);
+            JOptionPane.showMessageDialog(null, "No se pudo enviar su mensaje,\nintentelo de nuevo por favor.");
         }
     }
 
@@ -160,7 +160,11 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         } catch (IOException e) {
             estadoConexion = false;
             System.err.println("Ocurri\u00f3 un error al intentar conectar al servidor");
-            JOptionPane.showMessageDialog(null, "Ocurri\u00f3 un error al unirse al grupo.\nPor favor, intentelo de nuevo.", "Error", ERROR);
+            JOptionPane.showMessageDialog(null, "Ocurri\u00f3 un error al unirse al grupo.\nPor favor, intentelo de nuevo.");
+        } catch (IllegalArgumentException iae) {
+            estadoConexion = false;
+            System.err.println("Ocurri\u00f3 un error al intentar conectar al servidor: Puerto");
+            JOptionPane.showMessageDialog(null, "Ocurri\u00f3 un error al intentar conectarse al puerto especificado.\n\nPor favor,verifique sus datos e intentelo de nuevo.");
         }
         return estadoConexion;
     }
@@ -184,7 +188,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
     /**
      * Método que define la forma en que se procesa cada tipo de mensaje.
      *
-     * @param mensaje
+     * @param mensaje es el mensaje recibido desde el servicio, que se va a procesar.
      */
     @Override
     public void procesarMensaje(Mensaje mensaje) {
@@ -246,6 +250,35 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
     }
 
     /**
+     * Método que inicia el chat si no ocurren errores al intentar iniciar la
+     * sesion.
+     *
+     * @param ventanaChat variable de referencia de la Ventana de chat.
+     * @param ventanaInicio variable de referencia de la ventana de inicio.
+     * @return true si la conexión se establece exitosamente.
+     * @return false si ourre un error al intentar establecer la conexión.
+     */
+    public static boolean iniciarChat(VentanaChat ventanaChat, Inicio ventanaInicio) {
+        synchronized (ventanaInicio) {
+            try {
+                ventanaInicio.wait();
+            } catch (InterruptedException ex) {
+                System.err.println("Error: Chat interrumpido inesperadamente");
+                return false;
+            }
+        }
+        ventanaChat = new VentanaChat(ventanaInicio);
+        if (ventanaChat.iniciaServicio()) {
+            java.awt.EventQueue.invokeLater(ventanaChat);
+            ventanaInicio.dispose();
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
      * Método main
      *
      * @param args
@@ -254,18 +287,11 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         VentanaChat ventanaChat;
         Inicio ventanaInicio = new Inicio();
         ventanaInicio.mostrarVentana(ventanaInicio);
-        synchronized (ventanaInicio) {
-            try {
-                ventanaInicio.wait();
-            } catch (InterruptedException ex) {
-                System.out.println("InterrumptedException");
-            }
-        }
-        ventanaChat = new VentanaChat(ventanaInicio);
-        if (ventanaChat.iniciaServicio()) {
-            java.awt.EventQueue.invokeLater(ventanaChat);
-            ventanaInicio.dispose();
-        }
+        boolean continuar = false;
+        do {
+            ventanaChat = null;
+            continuar = iniciarChat(ventanaChat, ventanaInicio);
+        } while (continuar == false);
     }
 
     /**
