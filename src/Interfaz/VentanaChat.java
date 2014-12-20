@@ -31,13 +31,16 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
     Usuario destinatario;
     ArrayList<Usuario> listaDeUsuarios;
 
-    public VentanaChat() {
-        System.out.println("InitCoponents...");
-        initComponents();
-    }
-
+    /**
+     * Constructor de la clase VentanaChat que inicializa todas las variables de
+     * la clase.
+     *
+     * @param ventanaInicio se usa para obtener los datos de inicio de sesión
+     * que el usuario introduce.
+     */
     private VentanaChat(Inicio ventanaInicio) {
-        this();
+        System.out.println("Iniciando componentes de interfaz...");
+        initComponents();
         nombreUsuario = ventanaInicio.getNombreUsuario();
         grupo = ventanaInicio.getGrupo();
         puerto = ventanaInicio.getPuerto();
@@ -47,8 +50,12 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         listaDeUsuarios.add(new Usuario("Todos", grupo));
     }
 
+    /**
+     * Llena la lista jListUsuarios con los nombres de los usuarios que están
+     * conectados actualmente.
+     *
+     */
     private void actualizaListaUsuarios() {
-        //Object[] usuarios = {new Usuario("Ibeth", grupo), new Usuario("Erick", grupo), new Usuario("Ivan", grupo), new Usuario("Ferch", grupo), new Usuario("Isaac", grupo)};
         Object[] usuarios = listaDeUsuarios.toArray();
         this.jListUsuarios.setListData(usuarios);
         this.jListUsuarios.setSelectedIndex(0);
@@ -62,7 +69,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
      */
     private void mostrarMensajeVentana(Mensaje mensaje) {
 
-        String mensajeForm = Utileria.formatearMensaje(mensaje,usuario);
+        String mensajeForm = Utileria.formatearMensaje(mensaje, usuario);
         System.out.println(mensajeForm);
         try {
             kit.insertHTML(doc, doc.getLength(), mensajeForm, 0, 0, null);
@@ -74,12 +81,17 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         textAreaMensaje.setText("");
     }
 
-    public void prepararMensaje() {
+    /**
+     * Crea el objeto mensaje con el código de mensaje correspondiente, en base
+     * al usuario que esté seleccionado (mensaje a Todos o privado).
+     *
+     */
+    public void nuevoMensaje() {
         String mensajeVentana = textAreaMensaje.getText();
         Mensaje mensaje;
         if ((fijarDestinatario()) == 0) { // seleccionado mensaje a todos.
             mensaje = new Mensaje(1, mensajeVentana, usuario, null);
-        } else { // seleccionado unusuario (mensaje privado)
+        } else { // seleccionado un usuario (mensaje privado)
             mensaje = new Mensaje(2, mensajeVentana, usuario, destinatario);
         }
         if (enviarMensaje(mensaje)) { // si consigue enviar elmensaje
@@ -90,19 +102,17 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
     }
 
     /**
-     * Verifica si se presina el boton "botonEnviar".En caso de que así sea,
-     * llama a los métodos mostrarMensajeVentana() y ...
+     * Verifica si se presina el boton "botonEnviar" e inicia un nuevoMensaje.
      *
      * @param evt Contiene la información del evento ocurrido en el botón
      * "botonEnviar".
      */
     private void botonEnviarMensajeActionPerformed(java.awt.event.ActionEvent evt) {
-        prepararMensaje();
+        nuevoMensaje();
     }
 
     /**
-     * Verifica si se presina la tecla [Enter]. En caso de que así sea, llama a
-     * los métodos mostrarMensajeVentana() y ...
+     * Verifica si se presina la tecla [Enter] e inicia un nuevoMensaje
      *
      * @param evt Es el evento que tiene la información de la tecla que presiona
      * el usuario en textAreaMensaje.
@@ -110,16 +120,28 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
     private void textAreaMensajeKeyPressed(java.awt.event.KeyEvent evt) {
         int codigoTecla = evt.getKeyCode();
         if (codigoTecla == 10) {
-            prepararMensaje();
+            nuevoMensaje();
         }
     }
 
+    /**
+     * Método que verifica a qué usuario se desea enviar el mensaje. (Verifica
+     * el elemento seleccionado en jListUsuarios)
+     *
+     */
     public int fijarDestinatario() {
         int indice = jListUsuarios.getSelectedIndex();
         this.destinatario = listaDeUsuarios.get(indice);
         return indice;
     }
 
+    /**
+     * Método establece la conexión con el grupo que el usuario especificó y
+     * arranca el servicio.
+     *
+     * @return true si la conexión es exitosa.
+     * @return false si ocurrió un error al intentar conectarse.
+     */
     private boolean iniciaServicio() {
         boolean estadoConexion;
         System.out.println("Intentando conectar al grupo:" + grupo);
@@ -128,11 +150,9 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
             servicio.unirAlGrupo();
             servicio.start();
             estadoConexion = true;
-
             labelEstadoConexion.setForeground(Color.GREEN);
             labelEstadoConexion.setText("Conectado a: " + grupo);
-
-            enviarMensaje(new Mensaje(0, "", usuario, null)); // mensaje login
+            enviarMensaje(new Mensaje(0, "Login", usuario, null)); // mensaje login
             actualizaListaUsuarios();
         } catch (IOException e) {
             estadoConexion = false;
@@ -142,6 +162,12 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         return estadoConexion;
     }
 
+    /**
+     * Método que envía el mensaje usando el servicio.
+     *
+     * @return true si se envía el mensaje exitosamente
+     * @return false si ourre un error al intentar enviar
+     */
     public boolean enviarMensaje(Mensaje mensaje) {
         try {
             servicio.enviarMensaje(mensaje);
@@ -152,6 +178,11 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         }
     }
 
+    /**
+     * Método que define la forma en que se procesa cada tipo de mensaje.
+     *
+     * @param mensaje
+     */
     @Override
     public void procesarMensaje(Mensaje mensaje) {
         int tipoMensaje = mensaje.getTipoMensaje();
@@ -161,7 +192,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
                 if (!mensaje.getRemitente().equals(this.usuario)) {
                     mostrarMensajeVentana(mensaje);
                     Usuario nuevoUConect = mensaje.getRemitente();
-                    enviarMensaje(new Mensaje(5, "", this.usuario, nuevoUConect)); // envia notificación de conexión.
+                    enviarMensaje(new Mensaje(5, "Activo", this.usuario, nuevoUConect)); // envia notificación de conexión.
                     if (!listaDeUsuarios.contains(nuevoUConect)) {
                         listaDeUsuarios.add(nuevoUConect);
                     }
@@ -187,7 +218,7 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
             case 4: // Error al leer msj
                 mostrarMensajeVentana(mensaje);
                 break;
-            case 5: //Actualización de conexión
+            case 5: //Actualización de usuarios conectados (Se envía cuando un nuevo usuario se conecta)
                 if (!mensaje.getRemitente().equals(this.usuario)) {
                     Usuario UConect = mensaje.getRemitente();
                     if (!listaDeUsuarios.contains(UConect)) {
@@ -269,8 +300,8 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
         textPaneMensajes.setEditable(false);
         textPaneMensajes.setContentType("text/html"); // NOI18N
 		textPaneMensajes.setEditorKit(kit);
-        textPaneMensajes.setDocument(doc);
-        
+		textPaneMensajes.setDocument(doc);
+        textPaneMensajes.setText("<html>\r\n  <head>\r\n\r\n  </head>\r\n  <body>\r\n    <p style=\"margin-top: 0\">\r\n   \n    </p>\r\n  </body>\r\n</html>\r\n");
         jScrollPane1.setViewportView(textPaneMensajes);
 
         jListUsuarios.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
@@ -358,7 +389,6 @@ public class VentanaChat extends JFrame implements Runnable, Chat {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         enviarMensaje(new Mensaje(3, "Fin de sesion", usuario, null));
     }//GEN-LAST:event_formWindowClosing
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonEnviarMensaje;
     private javax.swing.JLabel jLabel1;
